@@ -1,0 +1,16 @@
+- hosts: localhost
+
+  tasks:
+  - name: Get facts for all Public IPs within a resource groups
+    azure_rm_publicipaddress_info:
+      resource_group: "ansible"
+    register: output_ip_address
+
+  - name: Get loadbalancer info
+    azure_rm_loadbalancer_info:
+      resource_group: "ansible"
+      name: "ansible-web-lb"
+    register: output
+
+  - debug:
+      var: output
