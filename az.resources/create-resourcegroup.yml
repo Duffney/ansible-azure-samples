@@ -1,0 +1,19 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+  - name: Ansible 2.9 - Create a resource group 
+    azure_rm_resourcegroup:
+      name: ansible
+      location: centralus
+    tags:
+      - ansible-2-9
+
+  - name: Ansible 2.10 - Create a resource group
+    azure.azcollection.azure_rm_resourcegroup:
+      name: ansible
+      location: centralus
+    tags:
+      - ansible-2-10
