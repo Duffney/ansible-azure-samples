@@ -1,0 +1,37 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_prompt:
+  - name: vault_name
+    prompt: Enter a value for the Azure Key Vault.
+    private: no
+
+  tasks:
+  - name: Create resource group 
+    azure_rm_resourcegroup:
+      name: ansible
+      location: centralus
+
+  - name: Create instance of Key Vault
+    azure_rm_keyvault:
+      resource_group: ansible
+      vault_name: "{{ vault_name }}"
+      enabled_for_deployment: yes
+      vault_tenant: <tenant_id>
+      sku:
+        name: standard
+      access_policies:
+        - tenant_id: <tenant_id>
+          object_id: <object_id>
+          keys:
+            - get
+            - list
+            - create
+            - update
+            - delete
+          secrets:
+            - get
+            - list
+            - set
+            - delete

@@ -1,0 +1,47 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_prompt:
+  - name: client_id
+    prompt: Enter your Service Principal client_id.
+    private: no
+
+  - name: client_secret
+    prompt: Enter your Service Principal password.
+    private: yes
+
+  vars:
+  - prefix: deployAKSjenkins
+
+  tasks:
+  - name: Create resource group 
+    azure_rm_resourcegroup:
+      name: "{{ prefix }}-rg"
+      location: centralus
+
+  - name: Create an azure container registry
+    azure_rm_containerregistry:
+      name: "{{ prefix }}acr"
+      location: centralus
+      resource_group: "{{ prefix }}-rg"
+      admin_user_enabled: true
+      sku: Standard
+
+  - name: Create a managed Azure Container Services (AKS) instance
+    azure_rm_aks:
+      name: "{{ prefix }}aks"
+      location: centralus
+      resource_group: "{{ prefix }}-rg"
+      kubernetes_version: 1.18.10
+      dns_prefix: "{{ prefix }}aks"
+      linux_profile:
+        admin_username: azureuser
+        ssh_key: "{{lookup('file', '~/.ssh/id_rsa.pub') }}"
+      service_principal:
+        client_id: "{{ client_id }}"
+        client_secret: "{{ client_secret }}"
+      agent_pool_profiles:
+        - name: default
+          count: 1
+          vm_size: Standard_D2_v2

@@ -1,0 +1,22 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_prompt:
+  - name: acr_name
+    prompt: Enter a value for the Azure Container Registry.
+    private: no
+
+  tasks:
+  - name: Create resource group 
+    azure_rm_resourcegroup:
+      name: ansible
+      location: centralus
+
+  - name: Create an azure container registry
+    azure_rm_containerregistry:
+      name: "{{ acr_name }}"
+      location: centralus
+      resource_group: ansible
+      admin_user_enabled: true
+      sku: Standard

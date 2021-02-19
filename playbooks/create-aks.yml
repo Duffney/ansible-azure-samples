@@ -1,0 +1,32 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_prompt:
+  - name: aks_name
+    prompt: Enter a value for the AKS instance.
+    private: no
+
+  tasks:
+  - name: Create resource group 
+    azure_rm_resourcegroup:
+      name: ansible
+      location: centralus
+
+  - name: Create a managed Azure Container Services (AKS) instance
+    azure_rm_aks:
+      name: "{{ aks_name }}"
+      location: centralus
+      resource_group: ansible
+      kubernetes_version: 1.18.10
+      dns_prefix: "{{ aks_name }}"
+      linux_profile:
+        admin_username: azureuser
+        ssh_key: "{{lookup('file', '~/.ssh/id_rsa.pub') }}"
+      service_principal:
+        client_id: "<client_id>"
+        client_secret: "<client_secret>"
+      agent_pool_profiles:
+        - name: default
+          count: 1
+          vm_size: Standard_D2_v2
