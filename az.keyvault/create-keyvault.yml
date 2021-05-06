@@ -2,6 +2,11 @@
   connection: local
   gather_facts: false
 
+  vars:
+    tenant_id: e0fdc086-1469-4df3-85c2-4189079f170c
+    object_id: 2f09322b-a000-4ffb-9c5b-f831cc0ff543
+
+
   vars_prompt:
   - name: vault_name
     prompt: Enter a value for the Azure Key Vault.
@@ -18,12 +23,12 @@
       resource_group: ansible
       vault_name: "{{ vault_name }}"
       enabled_for_deployment: yes
-      vault_tenant: <tenant_id>
+      vault_tenant: "{{ tenant_id }}"
       sku:
         name: standard
       access_policies:
-        - tenant_id: <tenant_id>
-          object_id: <object_id>
+        - tenant_id: "{{ tenant_id }}"
+          object_id: "{{ object_id }}"
           keys:
             - get
             - list
